@@ -1,0 +1,13 @@
+name: oarfish_R_env_1.0
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-jsonlite
+  - r-arrow
+  - r-data.table
+  - bioconductor-tximport
+  - bioconductor-edger
+  - bioconductor-genomicranges
+  - bioconductor-go.db
+  - bioconductor-org.hs.eg.db
