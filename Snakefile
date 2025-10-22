@@ -23,7 +23,7 @@ print("Full merged config:", config)
 #samples
 # --- Read input path from config ---
 # # Use the config variable to build the glob pattern
-input_path = os.path.join(config['input_dir'], "{sample}.fastq.gz")
+input_path = os.path.join(config['input_dir'], "{sample}_fastq.gz")
 samples = glob_wildcards(input_path).sample
 #
 # # Print the extracted sample names to confirm it works
