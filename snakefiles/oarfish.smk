@@ -43,7 +43,7 @@ rule rename_cols:
     input:
         quant_list = expand("oarfish_output/{sample}.quant",sample=samples)
     output:
-        expand("oarfish_output/{sample}/quant.sf")
+        expand("oarfish_output/{sample}/quant.sf",sample=samples)
     params:
         woutdir = "oarfish_output"
     conda: "envs/R.yaml"
