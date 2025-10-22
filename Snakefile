@@ -6,8 +6,8 @@ config: "configs/config.yaml"
 
 #org dict
 org_dict = {
-            "mm39" = "organisms/mm39.yaml",
-            "hg38" = "organisms/hg38.yaml"
+            "mm39": "organisms/mm39.yaml",
+            "hg38": "organisms/hg38.yaml"
 }
 
 config: org_dict[config["organism"]]
