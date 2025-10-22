@@ -9,8 +9,9 @@ org_dict = {
             "mm39": "organisms/mm39.yaml",
             "hg38": "organisms/hg38.yaml"
 }
+organism = config["organism"]
 
-config: org_dict[config["organism"]]
+config: org_dict[organism]
 
 #samples
 
