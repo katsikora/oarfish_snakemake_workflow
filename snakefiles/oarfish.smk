@@ -18,7 +18,7 @@ rule oarfish_quant:
 rule mod_json:
     input:
         meta_json_list = expand("oarfish_output/{sample}.meta_info.json",sample=samples),
-        exons_fasta = config["exons_fasta"]
+        exons_fasta = "index/spliced.fa"
     output:
         expand("oarfish_output/{sample}/aux_info/meta_info.json",sample=samples)
     params:
