@@ -1,7 +1,7 @@
 rule oarfish_quant:
     input:
         index = "index/spliced_index",
-        reads = os.path.join(config["input_dir"], "{sample}.fa")
+        reads = os.path.join(config["input_dir"], "{sample}_fastq.gz")
     output:
         meta_json = "oarfish_output/{sample}.meta_info.json",
         bootstrap = "oarfish_output/{sample}.infreps.pq",
@@ -18,7 +18,7 @@ rule oarfish_quant:
 rule mod_json:
     input:
         meta_json_list = expand("oarfish_output/{sample}.meta_info.json",sample=samples),
-        exons_fasta = 
+        exons_fasta = config["exons_fasta"]
     output:
         expand("oarfish_output/{sample}/aux_info/meta_info.json",sample=samples)
     params:
@@ -43,7 +43,7 @@ rule rename_cols:
     input:
         quant_list = expand("oarfish_output/{sample}.quant",sample=samples)
     output:
-        expand("oarfish_output/{sample}/quant.sf")
+        expand("oarfish_output/{sample}/quant.sf",sample=samples)
     params:
         woutdir = "oarfish_output"
     conda: "envs/R.yaml"
