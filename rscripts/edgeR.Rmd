@@ -26,11 +26,6 @@ The Salmon-like output directories are read using edgeR’s catchSalmon function
 
 ```{r catch salmon}
 input_files<-snakemake@input[["input_files"]]
-#dirs<-list.dirs("/data/processing/bioinfo-core/oarfish_output",full.names=TRUE,recursive=TRUE)
-#dirs<-dirs[!grepl("logs",dirs)]
-#dirs<-dirs[!grepl("wasabi_sleuth",dirs)]
-#dirs<-dirs[!grepl("aux_info",dirs)]
-#dirs<-dirs[2:length(dirs)]
 dirs<-dirname(input_files)
 
 data<-catchSalmon(dirs)

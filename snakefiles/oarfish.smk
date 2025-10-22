@@ -1,7 +1,7 @@
 rule oarfish_quant:
     input:
         index = "index/spliced_index",
-        reads = os.path.join(config["input_dir"], "{sample}.fa")
+        reads = os.path.join(config["input_dir"], "{sample}.fastq.gz")
     output:
         meta_json = "oarfish_output/{sample}.meta_info.json",
         bootstrap = "oarfish_output/{sample}.infreps.pq",

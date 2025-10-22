@@ -1,0 +1,4 @@
+input_dir: /data/manke/sikora/oarfish_miniworkshop/oarfish_test_data
+sampleSheet: /data/manke/sikora/oarfish_miniworkshop/oarfish_test_data/sampleSheet.tsv
+organism: hg38
+
