@@ -1,6 +1,6 @@
 import os
 import yaml
-from snakemake.utils import glob_wildcards
+#from snakemake.utils import glob_wildcards
 
 ##paths
 
