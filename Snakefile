@@ -3,7 +3,7 @@ workflow_rscripts=os.path.join(workflow.basedir, "rscripts")
 
 ##config
 config: "configs/config.yaml"
-
+print(config)
 #org dict
 org_dict = {
             "mm39": "organisms/mm39.yaml",
