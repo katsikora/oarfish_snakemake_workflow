@@ -35,7 +35,7 @@ include: "snakefiles/make_index.smk"
 include: "snakefiles/oarfish.smk"
 
 if config["sampleSheet"]:
-    include: "DE.smk"
+    include: "snakefiles/DE.smk"
 
 
 
