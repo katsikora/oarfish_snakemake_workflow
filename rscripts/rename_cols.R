@@ -2,7 +2,7 @@ library(data.table)
 
 
 quant_list <- snakemake@input[["quant_list"]]
-woutdir <- snakemake@params[["oarfish_output"]]
+woutdir <- snakemake@params[["woutdir"]]
 #list files
 #dirs<-dir("/data/processing/bioinfo-core/oarfish_output",pattern="*.quant",full.names=TRUE)
 

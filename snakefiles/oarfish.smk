@@ -7,7 +7,8 @@ rule oarfish_quant:
         bootstrap = "oarfish_output/{sample}.infreps.pq",
         quant = "oarfish_output/{sample}.quant"
     params:
-        prefix = "oarfish_output/{sample}"
+        prefix = "oarfish_output/{sample}",
+        woutdir = "oarfish_output"
     envmodules: "oarfish/0.9.0"
     threads: 16
     shell: """
