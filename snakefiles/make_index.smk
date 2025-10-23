@@ -5,7 +5,7 @@ rule exon_fasta:
     output: "index/spliced.fa"
     envmodules: "gffread/0.12.7"
     shell: """
-          gffread -w {output} -g {genome_fasta} {genes_gtf}
+          gffread -w {output} -g {input.genome_fasta} {input.genes_gtf}
           """
 
 rule index_fasta:

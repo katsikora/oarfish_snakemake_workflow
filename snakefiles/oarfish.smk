@@ -7,7 +7,8 @@ rule oarfish_quant:
         bootstrap = "oarfish_output/{sample}.infreps.pq",
         quant = "oarfish_output/{sample}.quant"
     params:
-        prefix = "oarfish_output/{sample}"
+        prefix = "oarfish_output/{sample}",
+        woutdir = "oarfish_output"
     envmodules: "oarfish/0.9.0"
     threads: 16
     shell: """
@@ -18,7 +19,7 @@ rule oarfish_quant:
 rule mod_json:
     input:
         meta_json_list = expand("oarfish_output/{sample}.meta_info.json",sample=samples),
-        exons_fasta = config["exons_fasta"]
+        exons_fasta = "index/spliced.fa"
     output:
         expand("oarfish_output/{sample}/aux_info/meta_info.json",sample=samples)
     params:
