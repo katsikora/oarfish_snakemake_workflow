@@ -7,6 +7,6 @@ rule edgeR:
         sampleSheet = config["sampleSheet"]
     output: "edgeR_output/report.html"
     params:
-        input_dirs = expand(workflow.source_path("/oarfish_output/{sample}"),sample=samples)
+        input_dirs = lambda wildcards,input: [os.path.dirname(y) for y in [workflow.source_path(x) for x in input.quant_list]]
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR.Rmd"
