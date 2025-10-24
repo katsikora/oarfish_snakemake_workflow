@@ -8,4 +8,4 @@ rule edgeR:
     output: "edgeR_output/report.html"
     params:
     conda: "envs/R.yaml"
-    script: "../rscripts/edgeR.R"
+    script: "../rscripts/edgeR.Rmd"
