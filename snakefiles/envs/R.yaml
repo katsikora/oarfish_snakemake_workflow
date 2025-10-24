@@ -6,6 +6,7 @@ dependencies:
   - r-jsonlite
   - r-arrow
   - r-data.table
+  - r-rmarkdown
   - bioconductor-tximport
   - bioconductor-edger
   - bioconductor-genomicranges
