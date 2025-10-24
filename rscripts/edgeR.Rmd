@@ -5,6 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+system('mkdir -p ../edgeR_output')
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = '../edgeR_output')
 ```
