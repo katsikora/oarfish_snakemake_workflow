@@ -6,6 +6,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '../edgeR_output')
 ```
 
 ## Libs
@@ -39,6 +40,8 @@ For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
 ```{r sampleinfo}
 colnames(data$counts)<-basename(colnames(data$counts))
 divided.counts <- data$counts/data$annotation$Overdispersion
+
+write.table(divided.counts,"divided.counts.tsv",sep="\t")
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t")
