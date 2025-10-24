@@ -23,7 +23,7 @@ Oarfish output was reformatted to match Salmon output.
 The Salmon-like output directories are read using edgeR’s catchSalmon function, which imports the transcript-level counts and estimates the overdispersion associated with read-to-transcript assignment ambiguity.
 
 ```{r catch salmon}
-input_files<-snakemake@input[["input_files"]]
+input_files<-unlist(snakemake@params[["input_dirs"]])
 dirs<-dirname(input_files)
 
 data<-catchSalmon(dirs)
