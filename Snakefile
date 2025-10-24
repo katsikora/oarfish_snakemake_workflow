@@ -4,7 +4,7 @@ import yaml
 
 ##paths
 
-workflow_rscripts=os.path.join(workflow.basedir, "rscripts")
+workflow_rscripts=os.path.join(workflow.source_path, "rscripts")
 
 ##config
 # 1. Load your initial static config into a temporary Python variable.
