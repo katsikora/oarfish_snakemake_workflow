@@ -7,6 +7,7 @@ rule edgeR:
         sampleSheet = config["sampleSheet"]
     output: "edgeR_output/report.html"
     params:
-        input_files = lambda wildcards,input: [workflow.get_source(x) for x in input.quant_list]
+        basedir = workflow.basedir,
+        input_files = [os.path.join(workflow.basedir,x) for x in input.quant_list]
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR.Rmd"
