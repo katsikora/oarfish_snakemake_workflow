@@ -5,9 +5,10 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-system('mkdir -p ../edgeR_output')
+wd<-file.path(snakemake@params[["basedir"]],"edgeR_output")
+system(paste0('mkdir -p ',wd))
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '../edgeR_output')
+knitr::opts_knit$set(root.dir = wd)
 ```
 
 ## Libs
