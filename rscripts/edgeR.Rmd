@@ -46,10 +46,10 @@ divided.counts <- data$counts/data$annotation$Overdispersion
 write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
-sampleInfo<-read.table(sampleSheet,sep="\t")
+sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
 rownames(sampleInfo)<-sampleInfo$name
 write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
-#divided.counts<-divided.counts[,match(sampleInfo$name,colnames(divided.counts))]
+divided.counts<-divided.counts[,sampleInfo$name]
 
 
 y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
