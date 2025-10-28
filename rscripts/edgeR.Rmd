@@ -43,12 +43,13 @@ For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
 colnames(data$counts)<-basename(colnames(data$counts))
 divided.counts <- data$counts/data$annotation$Overdispersion
 
-#write.table(divided.counts,"divided.counts.tsv",sep="\t")
+write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t")
 rownames(sampleInfo)<-sampleInfo$name
-divided.counts<-divided.counts[,match(sampleInfo$name,colnames(divided.counts))]
+write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
+#divided.counts<-divided.counts[,match(sampleInfo$name,colnames(divided.counts))]
 
 
 y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
