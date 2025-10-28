@@ -8,6 +8,7 @@ dependencies:
   - r-data.table
   - r-rmarkdown
   - r-readr
+  - bioconductor-rtracklayer
   - bioconductor-tximport
   - bioconductor-edger
   - bioconductor-genomicranges

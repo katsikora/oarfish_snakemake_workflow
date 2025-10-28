@@ -5,7 +5,10 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+wd<-file.path(snakemake@params[["basedir"]],"edgeR_output")
+system(paste0('mkdir -p ',wd))
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = wd)
 ```
 
 ## Libs
@@ -23,7 +26,7 @@ Oarfish output was reformatted to match Salmon output.
 The Salmon-like output directories are read using edgeR’s catchSalmon function, which imports the transcript-level counts and estimates the overdispersion associated with read-to-transcript assignment ambiguity.
 
 ```{r catch salmon}
-input_files<-unlist(snakemake@params[["input_dirs"]])
+input_files<-unlist(snakemake@params[["input_files"]])
 dirs<-dirname(input_files)
 
 data<-catchSalmon(dirs)
@@ -40,8 +43,14 @@ For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
 colnames(data$counts)<-basename(colnames(data$counts))
 divided.counts <- data$counts/data$annotation$Overdispersion
 
+write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
+
 sampleSheet<-snakemake@input[["sampleSheet"]]
-sampleInfo<-read.table(sampleSheet,sep="\t")
+sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
+rownames(sampleInfo)<-sampleInfo$name
+write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
+divided.counts<-divided.counts[,sampleInfo$name]
+
 
 y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
 
