@@ -18,10 +18,16 @@ main_config.update(organism_config)
 # 5. Assign the final, merged dictionary to the global `config` object.
 config = main_config
 #print("Full merged config:", config)
+#define alleles
+alleles=["h1","h2"]
+fromBam=config["fromBam"]
 #samples
 # --- Read input path from config ---
 # # Use the config variable to build the glob pattern
-input_path = os.path.join(config['input_dir'], "{sample}_fastq.gz")
+if fromBam:
+    input_path = os.path.join(config['input_dir'], "{sample}.bam")
+else:
+    input_path = os.path.join(config['input_dir'], "{sample}_fastq.gz")
 samples = glob_wildcards(input_path).sample
 #
 # # Print the extracted sample names to confirm it works
