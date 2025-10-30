@@ -1,4 +1,4 @@
-rule edgeR_allelic:
+rule edgeR_allele:
     input:
         meta_json_list = expand("oarfish_output/{sample}_{allele}/aux_info/meta_info.json",sample=samples,allele=alleles),
         bt_list = expand("oarfish_output/{sample}_{allele}/aux_info/bootstrap/bootstraps.gz",sample=samples,allele=alleles),
@@ -9,6 +9,8 @@ rule edgeR_allelic:
     params:
         basedir = workflow.basedir,
         input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list],
-        outdir = "edgeR_allelic_output"
+        outdir = "edgeR_allele_output"
     conda: "envs/R.yaml"
-    script: "../rscripts/edgeR.Rmd"
+    script: "../rscripts/edgeR_allele.Rmd"
+
+
