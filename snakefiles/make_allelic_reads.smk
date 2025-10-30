@@ -30,7 +30,7 @@ rule namesort_bam:
     input:
         allelic_bam = "allelic_bams/{sample}_{allele}.bam"
     output:
-        namesorted_bam = temp("namesorted_bams/{sample}_{allele}.bam")
+        namesorted_bam = "namesorted_bams/{sample}_{allele}.bam"
     threads: 4
     envmodules: "samtools/1.21"
     shell: """
