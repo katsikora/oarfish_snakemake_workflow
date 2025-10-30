@@ -45,5 +45,5 @@ rule make_reads:
     threads: 4
     envmodules: "samtools/1.21"
     shell: """
-        samtools fastq -n -@ {threads} -0 /dev/null {input.namesorted_bam} > {output.reads}
+        samtools fastq -n -@ {threads} {input.namesorted_bam} | gzip -dc - > {output.reads}
         """
