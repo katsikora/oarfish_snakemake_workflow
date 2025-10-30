@@ -33,9 +33,6 @@ samples = glob_wildcards(input_path).sample
 # # Print the extracted sample names to confirm it works
 print("Found sample names:", samples)
 
-#define alleles
-alleles=["h1","h2"]
-fromBam=config["fromBam"]
 
 ##include rules
 include: "snakefiles/make_index.smk"
