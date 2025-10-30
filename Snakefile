@@ -29,6 +29,7 @@ print("Found sample names:", samples)
 
 #define alleles
 alleles=["h1","h2"]
+fromBam=config["fromBam"]
 
 ##include rules
 include: "snakefiles/make_index.smk"
