@@ -47,12 +47,19 @@ write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
-rownames(sampleInfo)<-sampleInfo$name
-write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,sampleInfo$name]
+sampleInfo_h1<-sampleInfo
+sampleInfo_h2<-sampleInfo
+sampleInfo_h1$allele<-"h1"
+sampleInfo_h2$allele<-"h2"
+allelic_sampleInfo<-as.data.frame(rbind(sampleInfo_h1,sampleInfo_h2))
+#rownames(sampleInfo)<-sampleInfo$name
+allelic_sampleInfo$unique_name<-with(allelic_sampleInfo,paste0(name,"_",allele))
+
+write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
+divided.counts<-divided.counts[,sampleInfo$unique_name]
 
 
-y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
+y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$allele, genes = data$annotation)
 
 head(y$genes)
 
@@ -90,7 +97,7 @@ y$samples
 MDS plots can also be used to visualize differences between the expression profiles of different samples with transcript-level counts.   
 
 ```{r MDS}
-plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$name,xlim = c(-4,4))
+plotMDS(y,col = c(1:2)[y$samples$allele],labels = y$samples$name,xlim = c(-4,4))
 ```
 
 ## Design matrix
@@ -98,7 +105,7 @@ plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$name,xlim = c(-4,
 We create the design matrix to compare HEK293 cells against HAP1 cells.   
 
 ```{r design}
-design <- model.matrix(~ condition, data = y$samples)
+design <- model.matrix(~ allele, data = y$samples)
 design
 ```
 

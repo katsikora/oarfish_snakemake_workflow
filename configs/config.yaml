@@ -1,4 +1,5 @@
 input_dir: /data/manke/sikora/oarfish_miniworkshop/oarfish_test_data
+fromBam: False
 sampleSheet: /data/manke/sikora/oarfish_miniworkshop/oarfish_test_data/sampleSheet.tsv
 organism: hg38
 
