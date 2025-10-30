@@ -17,7 +17,7 @@ with open(organism_config_path, "r") as f:
 main_config.update(organism_config)
 # 5. Assign the final, merged dictionary to the global `config` object.
 config = main_config
-print("Full merged config:", config)
+#print("Full merged config:", config)
 #samples
 # --- Read input path from config ---
 # # Use the config variable to build the glob pattern
@@ -27,23 +27,38 @@ samples = glob_wildcards(input_path).sample
 # # Print the extracted sample names to confirm it works
 print("Found sample names:", samples)
 
+#define alleles
+alleles=["h1","h2"]
 
 ##include rules
 include: "snakefiles/make_index.smk"
-include: "snakefiles/oarfish.smk"
+if not fromBam:
+    include: "snakefiles/oarfish.smk"
 
-if config["sampleSheet"]:
-    include: "snakefiles/DE.smk"
+    if config["sampleSheet"]:
+        include: "snakefiles/DE.smk"
 
-
-
-#define outputs
-req_files = ["index/spliced_index",
+    #define outputs
+    req_files = ["index/spliced_index",
         expand("oarfish_output/{sample}.quant",sample=samples),
         expand("oarfish_output/{sample}.meta_info.json",sample=samples),
         expand("oarfish_output/{sample}.infreps.pq",sample=samples)]
-if config["sampleSheet"]:
+    if config["sampleSheet"]:
         req_files.append("edgeR_output/report.html")
+else:
+    include: "snakefiles/make_allelic_reads.smk"
+    include: "snakefiles/oarfish_allelic.smk"
+    if config["sampleSheet"]:
+        include: "snakefiles/DE_allelic.smk"
+
+    #define outputs
+    req_files = ["index/spliced_index",
+        expand("oarfish_output/{sample}_{allele}.quant",sample=samples,allele=alleles),
+        expand("oarfish_output/{sample}_{allele}.meta_info.json",sample=samples,allele=alleles),
+        expand("oarfish_output/{sample}_{allele}.infreps.pq",sample=samples,allele=alleles)
+    ]
+    if config["sampleSheet"]:
+        req_files.append(["edgeR_allele_output/report.html","edgeR_allele_condition_output/report.html"])
 
 
 
