@@ -9,6 +9,7 @@ rule edgeR:
     params:
         basedir = workflow.basedir,
         input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list],
-        outdir = "edgeR_output"
+        outdir = "edgeR_output",
+        correctRTA = config["correctRTA"]
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR.Rmd"

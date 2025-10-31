@@ -41,18 +41,22 @@ For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
 
 ```{r sampleinfo}
 colnames(data$counts)<-basename(colnames(data$counts))
-divided.counts <- data$counts/data$annotation$Overdispersion
+correctRTA<-toupper(snakemake@params[["correctRTA"]])
+if(correctRTA){
+    data.counts <- data$counts/data$annotation$Overdispersion}else{
+    data.counts <- data$counts
+}
 
-write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
+write.table(data.counts,"data.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
 rownames(sampleInfo)<-sampleInfo$name
 write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,sampleInfo$name]
+data.counts<-data.counts[,sampleInfo$name]
 
 
-y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
+y <- DGEList(counts = data.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
 
 head(y$genes)
 

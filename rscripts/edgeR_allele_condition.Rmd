@@ -41,9 +41,13 @@ For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
 
 ```{r sampleinfo}
 colnames(data$counts)<-basename(colnames(data$counts))
-divided.counts <- data$counts/data$annotation$Overdispersion
+correctRTA<-toupper(snakemake@params[["correctRTA"]])
+if(correctRTA){
+    data.counts <- data$counts/data$annotation$Overdispersion}else{
+    data.counts <- data$counts
+}
 
-write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
+write.table(data.counts,"data.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
@@ -56,10 +60,10 @@ allelic_sampleInfo<-as.data.frame(rbind(sampleInfo_h1,sampleInfo_h2))
 allelic_sampleInfo$unique_name<-with(allelic_sampleInfo,paste0(name,"_",allele))
 
 write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,allelic_sampleInfo$unique_name]
+data.counts<-data.counts[,allelic_sampleInfo$unique_name]
 
 
-y <- DGEList(counts = divided.counts, samples = allelic_sampleInfo, genes = data$annotation)
+y <- DGEList(counts = data.counts, samples = allelic_sampleInfo, genes = data$annotation)
 
 head(y$genes)
 

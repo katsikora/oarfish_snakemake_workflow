@@ -9,7 +9,8 @@ rule edgeR_allele:
     params:
         basedir = workflow.basedir,
         input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list],
-        outdir = "edgeR_allele_output"
+        outdir = "edgeR_allele_output",
+        correctRTA = config["correctRTA"]
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR_allele.Rmd"
 
@@ -25,7 +26,8 @@ rule edgeR_allele_condition:
     params:
         basedir = workflow.basedir,
         input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list],
-        outdir = "edgeR_allele_condition_output"
+        outdir = "edgeR_allele_condition_output",
+        correctRTA = config["correctRTA"]
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR_allele_condition.Rmd"
 
