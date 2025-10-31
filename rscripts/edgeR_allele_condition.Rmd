@@ -47,17 +47,23 @@ write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
-rownames(sampleInfo)<-sampleInfo$name
-write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,sampleInfo$name]
+sampleInfo_h1<-sampleInfo
+sampleInfo_h2<-sampleInfo
+sampleInfo_h1$allele<-"h1"
+sampleInfo_h2$allele<-"h2"
+allelic_sampleInfo<-as.data.frame(rbind(sampleInfo_h1,sampleInfo_h2))
+#rownames(sampleInfo)<-sampleInfo$name
+allelic_sampleInfo$unique_name<-with(allelic_sampleInfo,paste0(name,"_",allele))
+
+write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
+divided.counts<-divided.counts[,allelic_sampleInfo$unique_name]
 
 
-y <- DGEList(counts = divided.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
+y <- DGEList(counts = divided.counts, samples = allelic_sampleInfo, genes = data$annotation)
 
 head(y$genes)
 
 gtf_file<-snakemake@input[["gtf_file"]]
-
 
 gtf<-rtracklayer::import(gtf_file)
 
@@ -90,7 +96,7 @@ y$samples
 MDS plots can also be used to visualize differences between the expression profiles of different samples with transcript-level counts.   
 
 ```{r MDS}
-plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$name,xlim = c(-4,4))
+plotMDS(y,col = c(1:2)[y$samples$allele],labels = y$samples$unique_name,xlim = c(-4,4))
 ```
 
 ## Design matrix
@@ -98,7 +104,7 @@ plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$name,xlim = c(-4,
 We create the design matrix to compare HEK293 cells against HAP1 cells.   
 
 ```{r design}
-design <- model.matrix(~ condition, data = y$samples)
+design <- model.matrix(~ allele + condition + allele:condition, data = y$samples)
 design
 ```
 
@@ -110,8 +116,12 @@ Estimate and visualize NB dispersions.
 ```{r disp}
 y <- estimateDisp(y, design, robust=TRUE)
 saveRDS(y,"y.RDS")
+if(is.na(y$common.dispersion)){
+knitr::knit_exit()
+}else{
 y$common.dispersion
 plotBCV(y)
+}
 
 ```
 
@@ -128,7 +138,7 @@ plotQLDisp(fit)
 Differentially expressed transcripts are tested between cell lines using the QL F-test.
 
 ```{r dte}
-qlf <- glmQLFTest(fit)
+qlf <- glmQLFTest(fit,coef=ncol(design))
 is.de <- decideTests(qlf, p.value=0.05)
 summary(is.de)
 

@@ -8,6 +8,7 @@ rule edgeR:
     output: "edgeR_output/report.html"
     params:
         basedir = workflow.basedir,
-        input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list]
+        input_files = lambda wildcards,input: [os.path.join(workflow.basedir,x) for x in input.quant_list],
+        outdir = "edgeR_output"
     conda: "envs/R.yaml"
     script: "../rscripts/edgeR.Rmd"
