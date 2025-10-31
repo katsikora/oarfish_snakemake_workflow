@@ -59,7 +59,7 @@ write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
 divided.counts<-divided.counts[,allelic_sampleInfo$unique_name]
 
 
-y <- DGEList(counts = divided.counts, samples = sampleInfo, genes = data$annotation)
+y <- DGEList(counts = divided.counts, samples = allelic_sampleInfo, genes = data$annotation)
 
 head(y$genes)
 
