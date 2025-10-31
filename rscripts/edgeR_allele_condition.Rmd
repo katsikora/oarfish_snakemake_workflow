@@ -56,7 +56,7 @@ allelic_sampleInfo<-as.data.frame(rbind(sampleInfo_h1,sampleInfo_h2))
 allelic_sampleInfo$unique_name<-with(allelic_sampleInfo,paste0(name,"_",allele))
 
 write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,sampleInfo$unique_name]
+divided.counts<-divided.counts[,allelic_sampleInfo$unique_name]
 
 
 y <- DGEList(counts = divided.counts, samples = sampleInfo, genes = data$annotation)
