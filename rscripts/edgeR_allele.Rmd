@@ -116,6 +116,7 @@ Estimate and visualize NB dispersions.
 
 ```{r disp}
 y <- estimateDisp(y, design, robust=TRUE)
+saveRDS(y,"y.RDS")
 y$common.dispersion
 plotBCV(y)
 
