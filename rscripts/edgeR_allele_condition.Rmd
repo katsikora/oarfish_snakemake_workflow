@@ -116,8 +116,12 @@ Estimate and visualize NB dispersions.
 ```{r disp}
 y <- estimateDisp(y, design, robust=TRUE)
 saveRDS(y,"y.RDS")
+if(is.na(y$common.dispersion)){
+knitr::knit_exit()
+}else{
 y$common.dispersion
 plotBCV(y)
+}
 
 ```
 
