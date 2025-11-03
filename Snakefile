@@ -48,7 +48,7 @@ if not fromBam:
         expand("oarfish_output/{sample}.meta_info.json",sample=samples),
         expand("oarfish_output/{sample}.infreps.pq",sample=samples)]
     if config["sampleSheet"]:
-        req_files.append("edgeR_transcript_output/report.html")
+        req_files.append(["edgeR_transcript_output/report.html","edgeR_gene_output/report.html"])
 else:
     include: "snakefiles/make_allelic_reads.smk"
     include: "snakefiles/oarfish_allelic.smk"
