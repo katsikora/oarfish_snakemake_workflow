@@ -48,7 +48,7 @@ if not fromBam:
         expand("oarfish_output/{sample}.meta_info.json",sample=samples),
         expand("oarfish_output/{sample}.infreps.pq",sample=samples)]
     if config["sampleSheet"]:
-        req_files.append("edgeR_output/report.html")
+        req_files.append("edgeR_transcript_output/report.html")
 else:
     include: "snakefiles/make_allelic_reads.smk"
     include: "snakefiles/oarfish_allelic.smk"
@@ -62,7 +62,7 @@ else:
         expand("oarfish_output/{sample}_{allele}.infreps.pq",sample=samples,allele=alleles)
     ]
     if config["sampleSheet"]:
-        req_files.append(["edgeR_allele_output/report.html","edgeR_allele_condition_output/report.html"])
+        req_files.append(["edgeR_transcript_allele_output/report.html","edgeR_transcript_allele_condition_output/report.html"])
 
 
 
