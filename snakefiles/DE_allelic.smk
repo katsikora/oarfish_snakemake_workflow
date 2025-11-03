@@ -36,7 +36,7 @@ rule edgeR_gene_allele:
         meta_json_list = expand("oarfish_output/{sample}_{allele}.meta_info.json",sample=samples,allele=alleles),
         bt_list = expand("oarfish_output/{sample}_{allele}.infreps.pq",sample=samples,allele=alleles),
         quant_list = expand("oarfish_output/{sample}_{allele}/quant.sf",sample=samples,allele=alleles),
-        t2g = config["t2g"]
+        t2g = config["t2g"],
         sampleSheet = config["sampleSheet"]
     output: "edgeR_gene_allele_output/report.html"
     params:
