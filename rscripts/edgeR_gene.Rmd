@@ -48,7 +48,7 @@ write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
 data.counts<-data.counts[,sampleInfo$name]
 
 
-y <- DGEList(counts = data.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
+y <- DGEList(counts = data.counts, samples = sampleInfo, group = sampleInfo$condition)
 
 head(y$genes)
 
