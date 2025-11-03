@@ -38,7 +38,7 @@ txi<-tximport(input_files, type = "oarfish", tx2gene = tx2gene)
 
 
 ```{r sampleinfo}
-data.couts<-txi$counts
+data.counts<-txi$counts
 write.table(data.counts,"data.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
