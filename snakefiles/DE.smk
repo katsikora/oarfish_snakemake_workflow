@@ -21,7 +21,7 @@ rule edgeR_gene:
         bt_list = expand("oarfish_output/{sample}.infreps.pq",sample=samples),
         quant_list = expand("oarfish_output/{sample}.quant",sample=samples),
         #gtf_file = config["genes_gtf"],
-        t2g = config["t2g"]
+        t2g = config["t2g"],
         sampleSheet = config["sampleSheet"]
     output: "edgeR_gene_output/report.html"
     params:
