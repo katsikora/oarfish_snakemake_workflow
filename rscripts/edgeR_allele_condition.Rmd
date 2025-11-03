@@ -86,7 +86,6 @@ After dividing counts by the estimated mapping ambiguity overdispersion, scaling
 ```{r filt norm}
 keep <- filterByExpr(y)
 table(keep)
-keep
 y <- y[keep, , keep.lib.sizes=FALSE]
 
 
