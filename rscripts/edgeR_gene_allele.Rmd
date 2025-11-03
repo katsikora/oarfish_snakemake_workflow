@@ -19,31 +19,26 @@ library(edgeR)
 library(GenomicRanges)
 ```
 
-## Catch Salmon
+## Import counts and summarize gene-wise
 
-Oarfish output was reformatted to match Salmon output.
+Original oarfish output will be used.
 
-The Salmon-like output directories are read using edgeR’s catchSalmon function, which imports the transcript-level counts and estimates the overdispersion associated with read-to-transcript assignment ambiguity.
+The  output files are read using tximport function, which imports the transcript-level counts and summarizes them per gene using a transcript to gene mapping file.
 
-```{r catch salmon}
+```{r tximport}
 input_files<-unlist(snakemake@params[["input_files"]])
-dirs<-dirname(input_files)
-
-data<-catchSalmon(dirs)
+names(input_files)<-gsub(".quant","",basename(input_files))
+tx2gene_file<-snakemake@input[["t2g"]]
+tx2gene<-read.delim(tx2gene_file,header=FALSE)[,c(1,2)]
+txi<-tximport(input_files, type = "oarfish", tx2gene = tx2gene)
 
 ```
 
 ## Prep the DGEList object
 
-To account for the mapping ambiguity resulting from the assignment of reads to transcripts, we use the divided count strategy that divides the transcript-level counts by the estimated mapping ambiguity overdispersion associated to each transcript.
-
-For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
-
 ```{r sampleinfo}
-colnames(data$counts)<-basename(colnames(data$counts))
-divided.counts <- data$counts/data$annotation$Overdispersion
-
-write.table(divided.counts,"divided.counts.tsv",sep="\t",quote=FALSE)
+data.counts<-txi$counts
+write.table(data.counts,"data.counts.tsv",sep="\t",quote=FALSE)
 
 sampleSheet<-snakemake@input[["sampleSheet"]]
 sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
@@ -56,34 +51,32 @@ allelic_sampleInfo<-as.data.frame(rbind(sampleInfo_h1,sampleInfo_h2))
 allelic_sampleInfo$unique_name<-with(allelic_sampleInfo,paste0(name,"_",allele))
 
 write.table(allelic_sampleInfo,"allelic_sampleInfo.tsv",sep="\t",quote=FALSE)
-divided.counts<-divided.counts[,allelic_sampleInfo$unique_name]
+data.counts<-data.counts[,allelic_sampleInfo$unique_name]
 
 
-y <- DGEList(counts = divided.counts, samples = allelic_sampleInfo, group = allelic_sampleInfo$allele, genes = data$annotation)
+y <- DGEList(counts = data.counts, samples = allelic_sampleInfo, group = allelic_sampleInfo$allele)
 
 head(y$genes)
 
-gtf_file<-snakemake@input[["gtf_file"]]
+#gtf_file<-snakemake@input[["gtf_file"]]
 
 
-gtf<-rtracklayer::import(gtf_file)
+#gtf<-rtracklayer::import(gtf_file)
 
-ginfo <- mcols(gtf)[match(rownames(y),mcols(gtf)$transcript_id),c("transcript_type","gene_id","gene_name")]
-y$genes <- cbind(y$genes,ginfo)
-head(y$genes)
+#ginfo <- mcols(gtf)[match(rownames(y),mcols(gtf)$transcript_id),c("transcript_type","gene_id","gene_name")]
+#y$genes <- cbind(y$genes,ginfo)
+#head(y$genes)
 ```
 
 
 ## Filter and normalize
 
-Lowly expressed transcripts are filtered out prior to the downstream analysis.   
-
-After dividing counts by the estimated mapping ambiguity overdispersion, scaling factors can computed using the TMM method to convert the resulting library sizes to effective library sizes.   
+Lowly expressed genes are filtered out prior to the downstream analysis.   
+Scaling factors can computed using the TMM method to convert the resulting library sizes to effective library sizes.
 
 ```{r filt norm}
 keep <- filterByExpr(y)
 table(keep)
-keep
 y <- y[keep, , keep.lib.sizes=FALSE]
 
 
@@ -94,10 +87,10 @@ y$samples
 
 ## Calculate MDS
 
-MDS plots can also be used to visualize differences between the expression profiles of different samples with transcript-level counts.   
+MDS plots can also be used to visualize differences between the expression profiles of different samples with gene-level counts.
 
 ```{r MDS}
-plotMDS(y,col = c(1:2)[y$samples$allele],labels = y$samples$name,xlim = c(-4,4))
+plotMDS(y,col = c(1:2)[y$samples$allele],labels = y$samples$unique_name,xlim = c(-4,4))
 ```
 
 ## Design matrix
@@ -123,7 +116,7 @@ plotBCV(y)
 ```
 
 The NB dispersion estimates will not be used further under the latest quasi-likelihood (QL) pipeline.   
-For DTE analyses, we still recommend using the quasi-likelihood (QL) pipeline for stricter error rate control by accounting for the uncertainty associated with the dispersion estimation.
+For DGE analyses, we're going to use the quasi-likelihood (QL) pipeline for stricter error rate control by accounting for the uncertainty associated with the dispersion estimation.
 
 ```{r quasil}
 fit <- glmQLFit(y, design, robust=TRUE)
@@ -132,7 +125,7 @@ plotQLDisp(fit)
 
 ## Differential expression
 
-Differentially expressed transcripts are tested between cell lines using the QL F-test.
+Differentially expressed genes are tested between cell lines using the QL F-test.
 
 ```{r dte}
 qlf <- glmQLFTest(fit)

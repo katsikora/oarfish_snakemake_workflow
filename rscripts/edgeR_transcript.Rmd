@@ -1,0 +1,165 @@
+---
+title: "edgeR"
+author: "Katarzyna Sikora"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+wd<-file.path(snakemake@params[["basedir"]],snakemake@params[["outdir"]])
+system(paste0('mkdir -p ',wd))
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = wd)
+```
+
+## Libs
+
+```{r libs}
+library(tximport)
+library(edgeR)
+library(GenomicRanges)
+```
+
+## Catch Salmon
+
+Oarfish output was reformatted to match Salmon output.
+
+The Salmon-like output directories are read using edgeR’s catchSalmon function, which imports the transcript-level counts and estimates the overdispersion associated with read-to-transcript assignment ambiguity.
+
+```{r catch salmon}
+input_files<-unlist(snakemake@params[["input_files"]])
+dirs<-dirname(input_files)
+
+data<-catchSalmon(dirs)
+
+```
+
+## Prep the DGEList object
+
+To account for the mapping ambiguity resulting from the assignment of reads to transcripts, we use the divided count strategy that divides the transcript-level counts by the estimated mapping ambiguity overdispersion associated to each transcript.
+
+For reference, see DOI: 10.1093/nar/gkad1167 and 10.1093/nargab/lqae151 .
+
+```{r sampleinfo}
+colnames(data$counts)<-basename(colnames(data$counts))
+correctRTA<-toupper(snakemake@params[["correctRTA"]])
+if(correctRTA){
+    data.counts <- data$counts/data$annotation$Overdispersion}else{
+    data.counts <- data$counts
+}
+
+write.table(data.counts,"data.counts.tsv",sep="\t",quote=FALSE)
+
+sampleSheet<-snakemake@input[["sampleSheet"]]
+sampleInfo<-read.table(sampleSheet,sep="\t",header=TRUE)
+rownames(sampleInfo)<-sampleInfo$name
+write.table(sampleInfo,"sampleInfo.tsv",sep="\t",quote=FALSE)
+data.counts<-data.counts[,sampleInfo$name]
+
+
+y <- DGEList(counts = data.counts, samples = sampleInfo, group = sampleInfo$condition, genes = data$annotation)
+
+head(y$genes)
+
+gtf_file<-snakemake@input[["gtf_file"]]
+
+
+gtf<-rtracklayer::import(gtf_file)
+
+ginfo <- mcols(gtf)[match(rownames(y),mcols(gtf)$transcript_id),c("transcript_type","gene_id","gene_name")]
+y$genes <- cbind(y$genes,ginfo)
+head(y$genes)
+```
+
+
+## Filter and normalize
+
+Lowly expressed transcripts are filtered out prior to the downstream analysis.   
+
+After dividing counts by the estimated mapping ambiguity overdispersion, scaling factors can computed using the TMM method to convert the resulting library sizes to effective library sizes.   
+
+```{r filt norm}
+keep <- filterByExpr(y)
+table(keep)
+y <- y[keep, , keep.lib.sizes=FALSE]
+
+
+y <- normLibSizes(y)
+y$samples
+```
+
+
+## Calculate MDS
+
+MDS plots can also be used to visualize differences between the expression profiles of different samples with transcript-level counts.   
+
+```{r MDS}
+plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$unique_name,xlim = c(-4,4))
+```
+
+## Design matrix
+
+We create the design matrix to compare HEK293 cells against HAP1 cells.   
+
+```{r design}
+design <- model.matrix(~ condition, data = y$samples)
+design
+```
+
+
+## Dispersion estimation
+
+Estimate and visualize NB dispersions.   
+
+```{r disp}
+y <- estimateDisp(y, design, robust=TRUE)
+saveRDS(y,"y.RDS")
+y$common.dispersion
+plotBCV(y)
+
+```
+
+The NB dispersion estimates will not be used further under the latest quasi-likelihood (QL) pipeline.   
+For DTE analyses, we still recommend using the quasi-likelihood (QL) pipeline for stricter error rate control by accounting for the uncertainty associated with the dispersion estimation.
+
+```{r quasil}
+fit <- glmQLFit(y, design, robust=TRUE)
+plotQLDisp(fit)
+```
+
+## Differential expression
+
+Differentially expressed transcripts are tested between cell lines using the QL F-test.
+
+```{r dte}
+qlf <- glmQLFTest(fit)
+is.de <- decideTests(qlf, p.value=0.05)
+summary(is.de)
+
+
+tt <- as.data.frame(topTags(qlf, n = Inf,p.value=0.05))
+head(tt)
+table(tt$transcript_type)
+length(unique(tt$gene_id))
+```
+## MA plot
+
+```{r ma}
+plotMD(qlf)
+```
+
+## Save and export results
+
+```{r save}
+saveRDS(qlf,"qlf.RDS")
+write.table(tt,"topTags_pval0.05.tsv",sep="\t",quote=FALSE)
+
+```
+
+
+## Session Info
+
+```{r session info}
+sessionInfo()
+```
+
+
