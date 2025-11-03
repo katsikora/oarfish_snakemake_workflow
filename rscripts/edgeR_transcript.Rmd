@@ -93,7 +93,7 @@ y$samples
 MDS plots can also be used to visualize differences between the expression profiles of different samples with transcript-level counts.   
 
 ```{r MDS}
-plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$name,xlim = c(-4,4))
+plotMDS(y,col = c(1:2)[y$samples$condition],labels = y$samples$unique_name,xlim = c(-4,4))
 ```
 
 ## Design matrix
