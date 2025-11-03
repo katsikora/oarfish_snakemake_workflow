@@ -63,7 +63,7 @@ else:
     ]
     if config["sampleSheet"]:
         req_files.append(["edgeR_transcript_allele_output/report.html","edgeR_transcript_allele_condition_output/report.html"])
-
+        req_files.append(["edgeR_gene_allele_output/report.html","edgeR_gene_allele_condition_output/report.html"])
 
 
 rule all:
